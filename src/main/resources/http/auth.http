@@ -1,0 +1,21 @@
+### registration
+POST localhost:8080/auth/registration
+#POST 192.168.100.103:8080/auth/registration
+Content-Type: application/json
+
+{
+  "name": "Nodirbek",
+  "surname": "Yaxyoev",
+  "email": "nodiryaxyoev@gmail.com",
+  "password": "12345678"
+}
+
+### login
+POST localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "nodiryaxyoev@gmail.com",
+  "password": "12345678"
+}
+
