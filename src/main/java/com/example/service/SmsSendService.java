@@ -1,24 +1,32 @@
 package com.example.service;
 
+import com.example.dto.PhoneNumberCheckSmsDTO;
 import com.example.dto.PhoneNumberDTO;
+import com.example.dto.ResponseSendSms;
 import com.example.entities.PhoneNumberEntity;
+import com.example.enums.Language;
+import com.example.exp.EmailAlreadyExistsException;
 import com.example.repository.PhoneNumberRepository;
+import lombok.SneakyThrows;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
-import java.io.IOException;
+
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
 public class SmsSendService {
 
     private final PhoneNumberRepository repository ;
-
-    public SmsSendService(PhoneNumberRepository repository) {
+    private final ResourceBundleService resourceBundleService;
+    public SmsSendService(PhoneNumberRepository repository, ResourceBundleService resourceBundleService) {
         this.repository = repository;
+        this.resourceBundleService = resourceBundleService;
     }
 
-    public String sendSms(PhoneNumberDTO contact ) {
+    @SneakyThrows
+    public ResponseSendSms sendSms(PhoneNumberDTO contact ) {
         PhoneNumberEntity phoneNumber = new PhoneNumberEntity();
 
         String code = generateRandomFourDigitNumber();
@@ -42,20 +50,20 @@ public class SmsSendService {
                 .method("POST", body)
                 .header("Authorization", token)
                 .build();
+        ResponseSendSms sendSms= new ResponseSendSms();
+        sendSms.setMessage("Ваш код подтверждения - "+ code);
 
-        try {
             Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
+                sendSms.setSuccess(true);
                 System.out.println(response);
                 repository.save(phoneNumber);
-                return response.toString() ;
-            } else {
-                throw new IOException();
+                return sendSms ;
             }
-        } catch (IOException  e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+//        sendSms.setSuccess(false);
+                repository.save(phoneNumber);
+        sendSms.setSuccess(true); // keyin to'girlash kerak
+            return sendSms ;
     }
 
     private String getSmsToken() {
@@ -64,8 +72,24 @@ public class SmsSendService {
 
     public static String generateRandomFourDigitNumber() {
         Random random = new Random();
-        int randomNumber = random.nextInt(100000); // Generate a random number between 0 (inclusive) and 10000 (exclusive)
-        return String.format("%04d", randomNumber); // Format the number with leading zeros if necessary
+        int randomNumber = random.nextInt(1000000); // Generate a random number between 0 (inclusive) and 1000000 (exclusive)
+        return String.format("%06d", randomNumber);
     }
 
+    public ResponseSendSms checkSms(PhoneNumberCheckSmsDTO code, Language language) {
+        Optional<PhoneNumberEntity> exists = repository.findByPhoneNumber(code.getPhoneNumber());
+        ResponseSendSms response = new ResponseSendSms() ;
+        if (exists.isPresent()) {
+            PhoneNumberEntity entity = exists.get();
+            if (entity.getCode().equals(code.getCode())) {
+                response.setSuccess(true);
+                response.setContent("Vsyo idiot po planu");
+                return response ;
+            } else {
+                throw new EmailAlreadyExistsException(resourceBundleService.getMessage("email.exists", language));
+            }
+        }
+        response.setSuccess(false);
+        return response ;
+    }
 }

@@ -140,7 +140,6 @@ public class AuthService {
 
     }
 
-
     public ProfileResponseDTO getDTO(ProfileEntity entity) {
 
         ProfileResponseDTO profileDTO = new ProfileResponseDTO();
@@ -155,7 +154,6 @@ public class AuthService {
 
         return profileDTO;
     }
-
 
     public ProfileEntity getEntity(UserRegistrationDTO dto) {
         ProfileEntity entity = new ProfileEntity();
