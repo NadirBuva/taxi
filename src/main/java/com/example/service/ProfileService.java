@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dto.auth.*;
 import com.example.entities.auth.ProfileEntity;
+import com.example.entities.auth.ProfileRole;
 import com.example.enums.Language;
 import com.example.enums.ProfileStatus;
 import com.example.exp.EmailAlreadyExistsException;
@@ -9,7 +10,6 @@ import com.example.exp.ItemNotFoundException;
 import com.example.exp.ProfileNotFoundException;
 import com.example.repository.ProfileCustomRepository;
 import com.example.repository.ProfileRepository;
-import com.example.utill.MD5;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -138,6 +138,24 @@ public class ProfileService {
 
     }
 
+    public Page<ProfileResponseDTO> getListClient() {
+
+        Pageable pageable = PageRequest.of(0,10);
+
+        Page<ProfileEntity> pageObj = repository.findAll(pageable);
+
+        List<ProfileEntity> content = pageObj.getContent();
+
+        List<ProfileResponseDTO> dtoList = new ArrayList<>();
+
+        for (ProfileEntity entity : content) {
+            if (entity.getRole().equals(ProfileRole.USER)){
+            dtoList.add(getDTO(entity));
+            }
+        }
+
+        return new PageImpl<>(dtoList, pageable, pageObj.getTotalElements());
+    }
     public Page<ProfileResponseDTO> getList() {
 
         Pageable pageable = PageRequest.of(0,10);
@@ -149,7 +167,9 @@ public class ProfileService {
         List<ProfileResponseDTO> dtoList = new ArrayList<>();
 
         for (ProfileEntity entity : content) {
-            dtoList.add(getDTO(entity));
+            if (entity.getRole().equals(ProfileRole.DRIVER)){
+                dtoList.add(getDTO(entity));
+            }
         }
 
         return new PageImpl<>(dtoList, pageable, pageObj.getTotalElements());

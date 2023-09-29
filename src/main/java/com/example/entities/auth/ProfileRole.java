@@ -1,5 +1,5 @@
 package com.example.entities.auth;
 
 public enum ProfileRole {
-    ADMIN, USER
+    ADMIN, USER , DRIVER
 }

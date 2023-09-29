@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.dto.DriverRegistrationDTO;
 import com.example.dto.auth.ProfileResponseDTO;
 import com.example.dto.auth.UserRegistrationDTO;
 import com.example.enums.Language;
@@ -25,12 +26,20 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Method for registration", description = "This method used to create a user")
-    @PostMapping("/registration")
-    private ResponseEntity<ProfileResponseDTO> registration(@Valid @RequestBody UserRegistrationDTO dto,
+    @Operation(summary = "Method for registration of clients", description = "This method used to create a client")
+    @PostMapping("/registrationClient")
+    private ResponseEntity<ProfileResponseDTO> registrationClient(@Valid @RequestBody UserRegistrationDTO dto,
                                                             @RequestHeader(value = "Accept-Language", defaultValue = "RU") Language language) {
         log.info("Registration : phone {}, name {}", dto.getPhoneNumber(), dto.getName());
-        ProfileResponseDTO result = service.registration(dto, language);
+        ProfileResponseDTO result = service.registrationClient(dto, language);
+        return ResponseEntity.ok(result);
+    }
+    @Operation(summary = "Method for registration of driver", description = "This method used to create a driver")
+    @PostMapping("/registrationDriver")
+    private ResponseEntity<ProfileResponseDTO> registrationForDriver(@Valid @RequestBody DriverRegistrationDTO dto,
+                                                            @RequestHeader(value = "Accept-Language", defaultValue = "RU") Language language) {
+        log.info("Registration : phone {}, name {}", dto.getPhoneNumber(), dto.getName());
+        ProfileResponseDTO result = service.registrationForDriver(dto, language);
         return ResponseEntity.ok(result);
     }
 

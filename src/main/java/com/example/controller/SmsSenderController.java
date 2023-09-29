@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.enums.Language;
+import com.example.dto.PhoneNumberDTO;
 import com.example.service.SMSSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,14 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "sms sender Controller", description = "This controller for sms")
 public class SmsSenderController {
 
-    private SMSSender service ;
+    private final SMSSender service ;
 
-    @Operation(summary = "Method for send sms ", description = "This method used to send sms")
-    @PostMapping("/registration")
-    private ResponseEntity<String> registration(@PathVariable("phone") String phone,
-                                                            @RequestHeader(value = "Accept-Language", defaultValue = "RU") Language language) {
+    public SmsSenderController(SMSSender service) {
+        this.service = service;
+    }
+
+    @Operation(summary = "Method for send sms hali ishlamaydigani  ", description = "This method used to send sms")
+    @PostMapping("/sendsms")
+    private ResponseEntity<String> registration(@Valid @RequestBody PhoneNumberDTO phone ) {
         log.info("Registration : phone {} ", phone );
-        String result = service.sendSMS(phone, language);
+        String result = service.sendSms(phone);
         return ResponseEntity.ok(result);
     }
 

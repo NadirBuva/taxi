@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.config.security.CustomUserDetail;
 import com.example.dto.auth.*;
 import com.example.service.ProfileService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,9 +52,15 @@ public class ProfileController {
 
 
 //    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Method for getting list of clients", description = "This method used to get list a client")
+    @GetMapping("/list_clients")
+    public ResponseEntity<?> getListClient() {
+        Page<ProfileResponseDTO> result = service.getListClient()       ;
+        return ResponseEntity.ok(result);
+    }
+    @Operation(summary = "Method for get list of drivers", description = "This method used to get list a client")
     @GetMapping("/list")
     public ResponseEntity<?> getList() {
-
         Page<ProfileResponseDTO> result = service.getList();
         return ResponseEntity.ok(result);
     }
