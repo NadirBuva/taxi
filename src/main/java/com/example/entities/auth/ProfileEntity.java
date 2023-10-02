@@ -1,6 +1,8 @@
 package com.example.entities.auth;
 
 import com.example.entities.AttachEntity;
+import com.example.entities.DriverLicence;
+import com.example.entities.Passport;
 import com.example.enums.Gender;
 import com.example.enums.ProfileStatus;
 import jakarta.persistence.*;
@@ -53,6 +55,18 @@ public class ProfileEntity {
     @ManyToOne
     @JoinColumn(name = "driver_image_id", insertable = false, updatable = false)
     private AttachEntity driver_image;
+
+    @Column(name = "passport_id")
+    private String passport_id;
+    @OneToOne
+    @JoinColumn(name = "passport_id", insertable = false, updatable = false)
+    private Passport passport;
+
+    @Column(name = "driver_license_id")
+    private String driver_license_id;
+    @OneToOne
+    @JoinColumn(name = "driver_license_id", insertable = false, updatable = false)
+    private DriverLicence driverLicence;
 
     @Column
     private Boolean visible=true;

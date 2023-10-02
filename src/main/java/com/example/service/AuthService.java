@@ -29,8 +29,6 @@ public class AuthService {
         this.attachRepository = attachRepository;
         this.resourceBundleService = resourceBundleService;
     }
-
-
     public ProfileResponseDTO registrationClient(UserRegistrationDTO dto, Language language) {
 
         Optional<ProfileEntity> exists = repository.findByPhoneNumber(dto.getPhoneNumber());
@@ -139,7 +137,6 @@ public class AuthService {
         return getDTO(entity);
 
     }
-
     public ProfileResponseDTO getDTO(ProfileEntity entity) {
 
         ProfileResponseDTO profileDTO = new ProfileResponseDTO();
@@ -154,7 +151,6 @@ public class AuthService {
 
         return profileDTO;
     }
-
     public ProfileEntity getEntity(UserRegistrationDTO dto) {
         ProfileEntity entity = new ProfileEntity();
         entity.setName(dto.getName());

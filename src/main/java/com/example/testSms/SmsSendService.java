@@ -1,12 +1,15 @@
-package com.example.service;
+package com.example.testSms;
 
 import com.example.dto.PhoneNumberCheckSmsDTO;
 import com.example.dto.PhoneNumberDTO;
 import com.example.dto.ResponseSendSms;
 import com.example.entities.PhoneNumberEntity;
+import com.example.entities.auth.ProfileEntity;
 import com.example.enums.Language;
-import com.example.exp.EmailAlreadyExistsException;
+import com.example.exp.ProfileNotFoundException;
 import com.example.repository.PhoneNumberRepository;
+import com.example.repository.ProfileRepository;
+import com.example.service.ResourceBundleService;
 import lombok.SneakyThrows;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
@@ -20,15 +23,21 @@ public class SmsSendService {
 
     private final PhoneNumberRepository repository ;
     private final ResourceBundleService resourceBundleService;
-    public SmsSendService(PhoneNumberRepository repository, ResourceBundleService resourceBundleService) {
+    private final ProfileRepository profileRepository;
+    public SmsSendService(PhoneNumberRepository repository, ResourceBundleService resourceBundleService, ProfileRepository profileRepository) {
         this.repository = repository;
         this.resourceBundleService = resourceBundleService;
+        this.profileRepository = profileRepository;
     }
 
     @SneakyThrows
     public ResponseSendSms sendSms(PhoneNumberDTO contact ) {
         PhoneNumberEntity phoneNumber = new PhoneNumberEntity();
 
+        Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(contact.getPhoneNumber());
+        if (byPhoneNumber.isEmpty()){
+            throw new ProfileNotFoundException("Profile topilmadi");
+        }
         String code = generateRandomFourDigitNumber();
         System.out.println(code);
         phoneNumber.setPhoneNumber(contact.getPhoneNumber());
@@ -78,19 +87,37 @@ public class SmsSendService {
 
 
     public ResponseSendSms checkSms(PhoneNumberCheckSmsDTO code, Language language) {
+
         Optional<PhoneNumberEntity> exists = repository.findByPhoneNumber(code.getPhoneNumber());
+
         ResponseSendSms response = new ResponseSendSms() ;
+
         if (exists.isPresent()) {
+
             PhoneNumberEntity entity = exists.get();
+            LocalDateTime sendingTime = entity.getSendingTime();
+            var hour = sendingTime.getHour();
+            var minute = sendingTime.getMinute();
+            System.out.println(minute);
+            System.out.println(LocalDateTime.now());
+            if(hour==LocalDateTime.now().getHour() && minute>=LocalDateTime.now().getMinute()-2){
             if (entity.getCode().equals(code.getCode())) {
                 response.setSuccess(true);
                 response.setContent("Vsyo idiot po planu");
                 return response ;
             } else {
-                throw new EmailAlreadyExistsException(resourceBundleService.getMessage("email.exists", language));
+                response.setSuccess(false);
+                response.setContent("Kod hato kiritildi ");
+                return response ;
             }
+            }
+            response.setSuccess(false);
+            response.setContent("kod yaroqsiz vaqt 2 mindan o'tib ketdi ");
+            return response ;
         }
         response.setSuccess(false);
+        response.setContent("Telefon raqam topilmadi!");
+        repository.delete(exists.get());
         return response ;
     }
 }

@@ -1,10 +1,9 @@
-package com.example.controller;
+package com.example.testSms;
 
 import com.example.dto.PhoneNumberCheckSmsDTO;
 import com.example.dto.PhoneNumberDTO;
 import com.example.dto.ResponseSendSms;
 import com.example.enums.Language;
-import com.example.service.SmsSendService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
