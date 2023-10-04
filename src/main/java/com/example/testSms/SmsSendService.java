@@ -34,10 +34,7 @@ public class SmsSendService {
     public ResponseSendSms sendSms(PhoneNumberDTO contact ) {
         PhoneNumberEntity phoneNumber = new PhoneNumberEntity();
 
-        Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(contact.getPhoneNumber());
-        if (byPhoneNumber.isEmpty()){
-            throw new ProfileNotFoundException("Profile topilmadi");
-        }
+
         String code = generateRandomFourDigitNumber();
         System.out.println(code);
         phoneNumber.setPhoneNumber(contact.getPhoneNumber());
@@ -87,9 +84,7 @@ public class SmsSendService {
 
 
     public ResponseSendSms checkSms(PhoneNumberCheckSmsDTO code, Language language) {
-
         Optional<PhoneNumberEntity> exists = repository.findByPhoneNumber(code.getPhoneNumber());
-
         ResponseSendSms response = new ResponseSendSms() ;
 
         if (exists.isPresent()) {
@@ -102,6 +97,12 @@ public class SmsSendService {
             System.out.println(LocalDateTime.now());
             if(hour==LocalDateTime.now().getHour() && minute>=LocalDateTime.now().getMinute()-2){
             if (entity.getCode().equals(code.getCode())) {
+                Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(code.getPhoneNumber());
+                if (byPhoneNumber.isEmpty()){
+                response.setSuccess(true);
+                response.setContent("Vsyo idiot po planu");
+                return response ;
+                }
                 response.setSuccess(true);
                 response.setContent("Vsyo idiot po planu");
                 return response ;

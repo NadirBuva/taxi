@@ -57,13 +57,13 @@ public class ProfileEntity {
     private AttachEntity driver_image;
 
     @Column(name = "passport_id")
-    private String passport_id;
+    private Integer passport_id;
     @OneToOne
     @JoinColumn(name = "passport_id", insertable = false, updatable = false)
     private Passport passport;
 
     @Column(name = "driver_license_id")
-    private String driver_license_id;
+    private Integer driver_license_id;
     @OneToOne
     @JoinColumn(name = "driver_license_id", insertable = false, updatable = false)
     private DriverLicence driverLicence;
