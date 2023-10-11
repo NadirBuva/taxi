@@ -10,10 +10,11 @@ public class JwtDTO {
     private Integer id;
 
     private String username;
+    private String phoneNumber;
     private ProfileRole role;
 
-    public JwtDTO(String username, ProfileRole role) {
-        this.username = username;
+    public JwtDTO(String phoneNumber, ProfileRole role) {
+        this.phoneNumber = phoneNumber;
         this.role = role;
     }
 }

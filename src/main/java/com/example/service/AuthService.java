@@ -7,9 +7,11 @@ import com.example.entities.auth.ProfileRole;
 import com.example.enums.Language;
 import com.example.enums.ProfileStatus;
 import com.example.exp.AttachNotFoundException;
-import com.example.exp.EmailAlreadyExistsException;
+import com.example.exp.PhoneAlreadyExistsException;
 import com.example.repository.AttachRepository;
 import com.example.repository.ProfileRepository;
+import com.example.utill.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +39,7 @@ public class AuthService {
             if (entity.getStatus().equals(ProfileStatus.NOT_ACTIVE)) {
                 repository.delete(entity);
             } else {
-                throw new EmailAlreadyExistsException(resourceBundleService.getMessage("email.exists", language));
+                throw new PhoneAlreadyExistsException(resourceBundleService.getMessage("email.exists", language));
             }
         }
 
@@ -83,7 +85,7 @@ public class AuthService {
             if (entity.getStatus().equals(ProfileStatus.NOT_ACTIVE)) {
                 repository.delete(entity);
             } else {
-                throw new EmailAlreadyExistsException(resourceBundleService.getMessage("email.exists", language));
+                throw new PhoneAlreadyExistsException(resourceBundleService.getMessage("email.exists", language));
             }
         }
 
@@ -150,6 +152,32 @@ public class AuthService {
         profileDTO.setCreatedDate(entity.getCreatedDate());
 
         return profileDTO;
+    }
+    public String verification(String jwt) {
+
+
+        JwtDTO jwtDTO;
+        try {
+            jwtDTO = JwtUtil.decodeToken(jwt);
+        } catch (JwtException e) {
+            return "Verification failed";
+        }
+
+        Optional<ProfileEntity> optional = repository.findByPhoneNumber(jwtDTO.getPhoneNumber());
+
+        if (optional.isEmpty()) {
+            return "Verification failed";
+        }
+
+        ProfileEntity entity = optional.get();
+
+        if (!entity.getStatus().equals(ProfileStatus.NOT_ACTIVE)) {
+            return "Verification failed";
+        }
+        entity.setStatus(ProfileStatus.ACTIVE);
+
+        repository.save(entity);
+        return "verification success";
     }
     public ProfileEntity getEntity(UserRegistrationDTO dto) {
         ProfileEntity entity = new ProfileEntity();

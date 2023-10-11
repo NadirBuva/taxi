@@ -5,7 +5,7 @@ import com.example.entities.auth.ProfileEntity;
 import com.example.entities.auth.ProfileRole;
 import com.example.enums.Language;
 import com.example.enums.ProfileStatus;
-import com.example.exp.EmailAlreadyExistsException;
+import com.example.exp.PhoneAlreadyExistsException;
 import com.example.exp.ItemNotFoundException;
 import com.example.exp.ProfileNotFoundException;
 import com.example.repository.ProfileCustomRepository;
@@ -89,7 +89,7 @@ public class ProfileService {
             if (entity.getStatus().equals(ProfileStatus.NOT_ACTIVE)) {
                 repository.delete(entity);
             } else {
-                throw new EmailAlreadyExistsException("Email already exists");
+                throw new PhoneAlreadyExistsException("Email already exists");
             }
         }
     }

@@ -1,5 +1,6 @@
-package com.example.entities;
+package com.example.entities.doc;
 
+import com.example.entities.AttachEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

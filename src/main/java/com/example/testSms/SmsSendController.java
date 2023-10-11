@@ -26,14 +26,14 @@ public class SmsSendController {
     }
 
     @Operation(summary = "Method for send sms clients", description = "This method used to send a sms ")
-    @PostMapping("/send")
+    @PostMapping(path = "/send", consumes = "application/json")
     private ResponseEntity<ResponseSendSms> registration(@Valid @RequestBody PhoneNumberDTO dto,
                                                          @RequestHeader(value = "Accept-Language", defaultValue = "RU") Language language) {
         ResponseSendSms isSending = service.sendSms(dto);
         return ResponseEntity.ok(isSending);
     }
     @Operation(summary = "Method for check sms ", description = "This method used to check  sms ")
-    @PostMapping("/checkcode")
+    @PostMapping(path = "/checkCode" , consumes = "application/json")
     private ResponseEntity<ResponseSendSms> registration(@Valid @RequestBody PhoneNumberCheckSmsDTO code,
                                                          @RequestHeader(value = "Accept-Language", defaultValue = "RU") Language language) {
         ResponseSendSms isSending = service.checkSms(code, language);
