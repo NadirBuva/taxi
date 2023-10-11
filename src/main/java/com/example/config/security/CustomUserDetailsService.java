@@ -23,9 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         Optional<ProfileEntity> profile = repository.findByPhoneNumber(login);
 
-        if (profile.isEmpty()) {
-            throw new UsernameNotFoundException("Bad Cretensional");
-        }
+
 
         return new CustomUserDetail(profile.get());
 

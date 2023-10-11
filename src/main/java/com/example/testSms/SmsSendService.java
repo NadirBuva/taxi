@@ -5,8 +5,9 @@ import com.example.dto.PhoneNumberDTO;
 import com.example.dto.ResponseSendSms;
 import com.example.entities.PhoneNumberEntity;
 import com.example.entities.auth.ProfileEntity;
+import com.example.entities.auth.ProfileRole;
 import com.example.enums.Language;
-import com.example.exp.ProfileNotFoundException;
+import com.example.enums.ProfileStatus;
 import com.example.repository.PhoneNumberRepository;
 import com.example.repository.ProfileRepository;
 import com.example.service.ResourceBundleService;
@@ -32,6 +33,10 @@ public class SmsSendService {
 
     @SneakyThrows
     public ResponseSendSms sendSms(PhoneNumberDTO contact ) {
+
+        Optional<PhoneNumberEntity> byPhoneNumber = repository.findByPhoneNumber(contact.getPhoneNumber());
+        byPhoneNumber.ifPresent(repository::delete);
+
         PhoneNumberEntity phoneNumber = new PhoneNumberEntity();
 
 
@@ -49,7 +54,6 @@ public class SmsSendService {
                 .addFormDataPart("mobile_phone", contact.getPhoneNumber().substring(1))
                 .addFormDataPart("message", "Ваш код подтверждения - "+code )
                 .addFormDataPart("from", "998907442551")
-
                 .build();
         Request request = new Request.Builder()
                 .url("https://notify.eskiz.uz/api/message/sms/send")
@@ -78,8 +82,8 @@ public class SmsSendService {
 
     public static String generateRandomFourDigitNumber() {
         Random random = new Random();
-        int randomNumber = random.nextInt(1000000); // Generate a random number between 0 (inclusive) and 1000000 (exclusive)
-        return String.format("%06d", randomNumber);
+        int randomNumber = random.nextInt(100000); // Generate a random number between 0 (inclusive) and 1000000 (exclusive)
+        return String.format("%05d", randomNumber);
     }
 
 
@@ -93,18 +97,27 @@ public class SmsSendService {
             LocalDateTime sendingTime = entity.getSendingTime();
             var hour = sendingTime.getHour();
             var minute = sendingTime.getMinute();
-            System.out.println(minute);
-            System.out.println(LocalDateTime.now());
+
             if(hour==LocalDateTime.now().getHour() && minute>=LocalDateTime.now().getMinute()-2){
             if (entity.getCode().equals(code.getCode())) {
                 Optional<ProfileEntity> byPhoneNumber = profileRepository.findByPhoneNumber(code.getPhoneNumber());
                 if (byPhoneNumber.isEmpty()){
-                response.setSuccess(true);
-                response.setContent("Vsyo idiot po planu");
+                    ProfileEntity newUser = new ProfileEntity();
+                    newUser.setPhoneNumber(code.getPhoneNumber());
+                    newUser.setCreatedDate(LocalDateTime.now());
+                    newUser.setVisible(true);
+                    newUser.setStatus(ProfileStatus.NOT_ACTIVE);
+                    newUser.setRole(ProfileRole.DRIVER);
+
+                    response.setSuccess(true);
+                    response.setMessage("New user");
+                    profileRepository.save(newUser);
+                    repository.delete(exists.get());
                 return response ;
                 }
                 response.setSuccess(true);
                 response.setContent("Vsyo idiot po planu");
+                repository.delete(exists.get());
                 return response ;
             } else {
                 response.setSuccess(false);
@@ -114,6 +127,7 @@ public class SmsSendService {
             }
             response.setSuccess(false);
             response.setContent("kod yaroqsiz vaqt 2 mindan o'tib ketdi ");
+            repository.delete(exists.get());
             return response ;
         }
         response.setSuccess(false);
@@ -121,4 +135,6 @@ public class SmsSendService {
         repository.delete(exists.get());
         return response ;
     }
+
+
 }

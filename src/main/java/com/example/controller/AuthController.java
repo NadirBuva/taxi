@@ -12,9 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//@RequestMapping(value = AuthController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth" )
 @Tag(name = "Authorization Controller", description = "This controller for authorization")
 public class AuthController {
 //    private final Logger log = LoggerFactory.getLogger(AuthController.class);
@@ -27,7 +28,7 @@ public class AuthController {
 
 
     @Operation(summary = "Method for registration of clients", description = "This method used to create a client")
-    @PostMapping("/registrationClient")
+    @PostMapping(path ="/registrationClient", consumes = "application/json")
     private ResponseEntity<ProfileResponseDTO> registrationClient(@Valid @RequestBody UserRegistrationDTO dto,
                                                             @RequestHeader(value = "Accept-Language", defaultValue = "RU") Language language) {
         log.info("Registration : phone {}, name {}", dto.getPhoneNumber(), dto.getName());
@@ -35,7 +36,7 @@ public class AuthController {
         return ResponseEntity.ok(result);
     }
     @Operation(summary = "Method for registration of driver", description = "This method used to create a driver")
-    @PostMapping("/registrationDriver")
+    @PostMapping(path ="/registrationDriver" , consumes = "application/json")
     private ResponseEntity<ProfileResponseDTO> registrationForDriver(@Valid @RequestBody DriverRegistrationDTO dto,
                                                             @RequestHeader(value = "Accept-Language", defaultValue = "RU") Language language) {
         log.info("Registration : phone {}, name {}", dto.getPhoneNumber(), dto.getName());

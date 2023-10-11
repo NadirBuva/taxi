@@ -1,5 +1,6 @@
-package com.example.entities;
+package com.example.entities.doc;
 
+import com.example.entities.AttachEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Passport {
+public class PassportEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

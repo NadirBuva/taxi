@@ -1,8 +1,8 @@
 package com.example.entities.auth;
 
 import com.example.entities.AttachEntity;
-import com.example.entities.DriverLicence;
-import com.example.entities.Passport;
+import com.example.entities.doc.DriverLicence;
+import com.example.entities.doc.PassportEntity;
 import com.example.enums.Gender;
 import com.example.enums.ProfileStatus;
 import jakarta.persistence.*;
@@ -44,7 +44,7 @@ public class ProfileEntity {
 
     @Enumerated(value = EnumType.STRING)
     @Column
-    private ProfileStatus status;
+    private ProfileStatus status=ProfileStatus.NOT_ACTIVE;
 
     @Enumerated(value = EnumType.STRING)
     @Column
@@ -60,7 +60,7 @@ public class ProfileEntity {
     private Integer passport_id;
     @OneToOne
     @JoinColumn(name = "passport_id", insertable = false, updatable = false)
-    private Passport passport;
+    private PassportEntity passport;
 
     @Column(name = "driver_license_id")
     private Integer driver_license_id;

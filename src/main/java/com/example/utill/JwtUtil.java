@@ -21,7 +21,7 @@ public class JwtUtil {
         jwtBuilder.claim("role", role);
 
         jwtBuilder.setExpiration(new Date(System.currentTimeMillis() + (tokenLiveTime)));
-        jwtBuilder.setIssuer("WareHouse test port");
+        jwtBuilder.setIssuer("take test port");
         return jwtBuilder.compact();
     }
 
@@ -34,12 +34,12 @@ public class JwtUtil {
 
         Claims claims = jws.getBody();
 
-        String username = (String) claims.get("username");
+        String phoneNumber = (String) claims.get("phoneNumber");
 
         String role = (String) claims.get("role");
         ProfileRole profileRole = ProfileRole.valueOf(role);
 
-        return new JwtDTO(username, profileRole);
+        return new JwtDTO(phoneNumber, profileRole);
 
     }
 
